@@ -1,5 +1,6 @@
 'use strict'
 
+const schedule = require('node-schedule');
 const puppeteer = require('puppeteer');
 const async = require('async');
 const stringify = require('csv-stringify/lib/sync');
@@ -10,10 +11,7 @@ const wait = (ms) => {
 }
 
 const urlArr = [
-  'https://shopee.vn/Ch%C4%83m-s%C3%B3c-da-cat.160.2341',
-  // 'https://shopee.vn/Chăm-sóc-da-cat.160.2341',
-  // 'https://shopee.vn/Thiết-Bị-Điện-Gia-Dụng-cat.2353',
-  'https://shopee.vn/Thiết-bị-chăm-sóc-quần-áo-cat.2353.9906'
+  
 ];
 
 const crawler = async () => {
@@ -21,13 +19,13 @@ const crawler = async () => {
     const result = [];
 
     for (const targetUrl of urlArr) {
-      // const targetUrl = 'https://shopee.vn/Ch%C4%83m-s%C3%B3c-da-cat.160.2341';
-      const browser = await puppeteer.launch({headless: true, args: ['--window-size=1920,1080'] });
+      const browser = await puppeteer.launch({headless: false, args: ['--window-size=1920,1080'] });
       const page = await browser.newPage();
       await page.setViewport({width: 1920,height: 1080,});
       await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36');
       await page.goto(targetUrl ,{waitUntil: 'load'});
       await page.waitFor(3000);
+      await page.waitForSelector
 
       const bodyHandle = await page.$('body');
       const { height } = await bodyHandle.boundingBox();
@@ -39,7 +37,7 @@ const crawler = async () => {
         await page.evaluate(_viewportHeight => {
           window.scrollBy(0, _viewportHeight);
         }, viewportHeight);
-        await wait(1000);
+        await wait(2000);
         viewportIncr = viewportIncr + viewportHeight;
       }
     
@@ -70,7 +68,7 @@ const crawler = async () => {
       await page.close();
       await browser.close();
 
-      result.push(resultStr);
+      result.push({targetUrl, resultStr});
     }
 
     // debugger;
@@ -78,7 +76,7 @@ const crawler = async () => {
     
     if (result.length !== 0) {
       const csv = stringify(result);
-      fs.writeFileSync('cvs/result.csv', csv);
+      fs.writeFileSync('cvs/result_'+Date.now()+'.csv', JSON.stringify(result));
     }
 
   } catch (err) {
@@ -86,4 +84,7 @@ const crawler = async () => {
   }
 }
 
-crawler();
+schedule.scheduleJob('0 * * * * *', () => {
+  crawler();
+})
+
