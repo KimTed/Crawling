@@ -18,14 +18,15 @@ const crawler = async () => {
   try {
     const result = [];
 
+    const cTime = new Date().getFullYear() + "" + (new Date().getMonth() + 1) + "" +  new Date().getDate() + "" + new Date().getHours() + "" + new Date().getMinutes();
+
     for (const targetUrl of urlArr) {
       const browser = await puppeteer.launch({headless: false, args: ['--window-size=1920,1080'] });
       const page = await browser.newPage();
       await page.setViewport({width: 1920,height: 1080,});
       await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36');
       await page.goto(targetUrl ,{waitUntil: 'load'});
-      await page.waitFor(3000);
-      await page.waitForSelector
+      await page.waitForSelector('.col-xs-2-4.shopee-search-item-result__item');
 
       const bodyHandle = await page.$('body');
       const { height } = await bodyHandle.boundingBox();
@@ -58,13 +59,15 @@ const crawler = async () => {
             productInfo.prdCost = ele.querySelector('._341bF0').textContent;
             if (ele.querySelector('._18SLBt')) productInfo.soldCnt = ele.querySelector('._18SLBt').textContent;
 
+            productInfo.targetUrl = window.location.href;
+
             tmpArr.push(productInfo);
           }
         }
           return tmpArr;
       });
       // await page.waitFor(5000);
-      console.log("END~~~~~~~", resultStr);
+      // console.log("END~~~~~~~", resultStr);
       await page.close();
       await browser.close();
 
@@ -76,7 +79,7 @@ const crawler = async () => {
     
     if (result.length !== 0) {
       const csv = stringify(result);
-      fs.writeFileSync('cvs/result_'+Date.now()+'.csv', JSON.stringify(result));
+      fs.writeFileSync('cvs/result_'+cTime+'.csv', JSON.stringify(result));
     }
 
   } catch (err) {
@@ -84,7 +87,6 @@ const crawler = async () => {
   }
 }
 
-schedule.scheduleJob('0 * * * * *', () => {
-  crawler();
-})
-
+schedule.scheduleJob('0 * * * *', () => {
+  crawler();  
+});
