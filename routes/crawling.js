@@ -78,8 +78,10 @@ const crawler = async () => {
     console.dir(result);
     
     if (result.length !== 0) {
-      const csv = stringify(result);
-      fs.writeFileSync('cvs/result_'+cTime+'.csv', JSON.stringify(result));
+      const dirNm = 'cvs/result_'+cTime+'.csv';
+      
+      fs.writeFileSync(dirNm, JSON.stringify(result));
+      fs.closeSync(dirNm);
     }
 
   } catch (err) {
