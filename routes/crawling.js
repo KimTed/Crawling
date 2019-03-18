@@ -5,6 +5,7 @@ const puppeteer = require('puppeteer');
 const async = require('async');
 const stringify = require('csv-stringify/lib/sync');
 const fs = require('fs');
+const {logger} = require('../config/logConfig');
 
 const wait = (ms) => {
   return new Promise(resolve => setTimeout(() => resolve(), ms));
@@ -25,6 +26,7 @@ const getDateStr = () => {
 }
 
 const crawler = async () => {
+  
   const browser = await puppeteer.launch({headless: false, args: ['--window-size=1920,1080', '--disable-notifications']});
 
   try {
@@ -89,7 +91,7 @@ const crawler = async () => {
       
       result.push({targetUrl, resultStr});
     }
-    throw new Error("test");
+    // throw new Error("test");
     console.dir(result);
     
     if (result.length !== 0) {
@@ -100,11 +102,12 @@ const crawler = async () => {
     
   } catch (err) {
     console.log('Error: ', err);
+    logger.error("Error 발생: " + err);
   } finally {
     await browser.close();
   }
 }
 
-// schedule.scheduleJob('0 * * * *', () => {
+schedule.scheduleJob('0 * * * *', () => {
   crawler();  
-// });
+});
