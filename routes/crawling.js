@@ -12,10 +12,7 @@ const wait = (ms) => {
 }
 
 const urlArr = [
-  'https://shopee.vn/Ch%C4%83m-s%C3%B3c-da-cat.160.2341',
-  'https://shopee.vn/Chăm-sóc-da-cat.160.2341',
-  'https://shopee.vn/Thiết-Bị-Điện-Gia-Dụng-cat.2353',
-  'https://shopee.vn/Thiết-bị-chăm-sóc-quần-áo-cat.2353.9906'
+  
 ];
 
 const getDateStr = () => {
@@ -89,7 +86,7 @@ const crawler = async () => {
           return tmpArr;
       });
 
-      console.log("END~~~~~~~", resultStr);
+      // console.log("END~~~~~~~", resultStr);
       await page.close();
       
       result.push({targetUrl, resultStr});
@@ -104,7 +101,7 @@ const crawler = async () => {
     }
     
   } catch (err) {
-    console.log('Error: ', err);
+    // console.log('Error: ', err);
     logger.error("Error 발생: " + err);
   } finally {
     await browser.close();
