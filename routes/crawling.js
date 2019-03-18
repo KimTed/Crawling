@@ -12,7 +12,10 @@ const wait = (ms) => {
 }
 
 const urlArr = [
-  
+  'https://shopee.vn/Ch%C4%83m-s%C3%B3c-da-cat.160.2341',
+  'https://shopee.vn/Chăm-sóc-da-cat.160.2341',
+  'https://shopee.vn/Thiết-Bị-Điện-Gia-Dụng-cat.2353',
+  'https://shopee.vn/Thiết-bị-chăm-sóc-quần-áo-cat.2353.9906'
 ];
 
 const getDateStr = () => {
@@ -27,7 +30,7 @@ const getDateStr = () => {
 
 const crawler = async () => {
   
-  const browser = await puppeteer.launch({headless: false, args: ['--window-size=1920,1080', '--disable-notifications']});
+  const browser = await puppeteer.launch({headless: true, args: ['--window-size=1920,1080', '--disable-notifications']});
 
   try {
     const result = [];
