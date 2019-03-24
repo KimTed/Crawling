@@ -12,7 +12,8 @@ const wait = (ms) => {
 }
 
 const urlArr = [
-  
+  'https://shopee.vn/Th%E1%BB%83-Thao-Du-L%E1%BB%8Bch-cat.9675'
+  ,'https://shopee.co.id/Pakaian-Pria-cat.33','https://shopee.co.id/Voucher-cat.2160','https://shopee.co.th/%E0%B8%AD%E0%B8%B7%E0%B9%88%E0%B8%99%E0%B9%86-cat.61'
 ];
 
 const getDateStr = () => {
@@ -27,7 +28,7 @@ const getDateStr = () => {
 
 const crawler = async () => {
   
-  const browser = await puppeteer.launch({headless: true, args: ['--window-size=1920,1080', '--disable-notifications']});
+  const browser = await puppeteer.launch({headless: false, args: ['--window-size=1920,1080', '--disable-notifications']});
 
   try {
     const result = [];
@@ -57,7 +58,7 @@ const crawler = async () => {
       //   window.scrollTo(0, 0);
       // });
     
-      const resultStr = await page.evaluate(() => {
+      const productArr = await page.evaluate(() => {
         const tmpArr = [];
         const products = document.querySelectorAll('.col-xs-2-4.shopee-search-item-result__item');
 
@@ -74,9 +75,18 @@ const crawler = async () => {
             productInfo.imgUrl = ele.querySelector('._1T9dHf._3XaILN') ? ele.querySelector('._1T9dHf._3XaILN').style.backgroundImage.split('"')[1] : 'fail to get image';
             productInfo.isFavorite = ele.querySelector('._3BQlNg.bgXBUk') ? "Y" : "N";
             productInfo.prdNm = ele.querySelector('._1NoI8_._2gr36I').textContent;
-            productInfo.prdCost = ele.querySelector('._341bF0').textContent;
-            if (ele.querySelector('._18SLBt')) productInfo.soldCnt = ele.querySelector('._18SLBt').textContent;
-
+            productInfo.originalPrdCost = (ele.querySelector('._1w9jLI.QbH7Ig.t-e-Bx')) ? ele.querySelector('._1w9jLI.QbH7Ig.t-e-Bx').textContent.replace(/[^\.0-9]/g,"") : "";
+            
+            let costArr = ele.querySelectorAll('._341bF0');
+            if (costArr) {
+              Array.from(costArr).map((ele, idx) =>{
+                if (idx === 0)
+                  productInfo.fromPrdCost = ele.textContent.replace(/[^\.0-9]/g,"");
+                else 
+                  productInfo.toPrdCost = ele.textContent.replace(/[^\.0-9]/g,"");
+              });
+            }
+            productInfo.soldCnt = (ele.querySelector('._18SLBt')) ? ele.querySelector('._18SLBt').textContent.replace(/[^0-9]/g,"") : "";
             productInfo.targetUrl = window.location.href;
             productInfo.createDt = yearStr + monthStr + dateStr + hoursStr + minStr;
 
@@ -86,10 +96,11 @@ const crawler = async () => {
           return tmpArr;
       });
 
-      // console.log("END~~~~~~~", resultStr);
+      console.log("END~~~~~~~", productArr);
+      
       await page.close();
       
-      result.push({targetUrl, resultStr});
+      result.push({targetUrl, productArr});
     }
     // throw new Error("test");
     console.dir(result);
@@ -108,6 +119,6 @@ const crawler = async () => {
   }
 }
 
-schedule.scheduleJob('0 * * * *', () => {
+// schedule.scheduleJob('0 * * * *', () => {
   crawler();  
-});
+// });
