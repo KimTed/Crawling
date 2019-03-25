@@ -12,8 +12,7 @@ const wait = (ms) => {
 }
 
 const urlArr = [
-  'https://shopee.vn/Th%E1%BB%83-Thao-Du-L%E1%BB%8Bch-cat.9675'
-  ,'https://shopee.co.id/Pakaian-Pria-cat.33','https://shopee.co.id/Voucher-cat.2160','https://shopee.co.th/%E0%B8%AD%E0%B8%B7%E0%B9%88%E0%B8%99%E0%B9%86-cat.61'
+  
 ];
 
 const getDateStr = () => {
@@ -28,7 +27,7 @@ const getDateStr = () => {
 
 const crawler = async () => {
   
-  const browser = await puppeteer.launch({headless: false, args: ['--window-size=1920,1080', '--disable-notifications']});
+  const browser = await puppeteer.launch({headless: true, args: ['--window-size=1920,1080', '--disable-notifications']});
 
   try {
     const result = [];
@@ -96,14 +95,14 @@ const crawler = async () => {
           return tmpArr;
       });
 
-      console.log("END~~~~~~~", productArr);
+      // console.log("END~~~~~~~", productArr);
       
       await page.close();
       
       result.push({targetUrl, productArr});
     }
     // throw new Error("test");
-    console.dir(result);
+    // console.dir(result);
     
     if (result.length !== 0) {
       const dirNm = 'cvs/result_'+getDateStr()+'.csv';
@@ -119,6 +118,6 @@ const crawler = async () => {
   }
 }
 
-// schedule.scheduleJob('0 * * * *', () => {
+schedule.scheduleJob('0 * * * *', () => {
   crawler();  
-// });
+});
