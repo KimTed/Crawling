@@ -12,7 +12,7 @@ const wait = (ms) => {
 }
 
 const urlArr = [
-  
+
 ];
 
 const getDateStr = () => {
@@ -34,7 +34,7 @@ const crawler = async () => {
     for (const targetUrl of urlArr) {
       
       const page = await browser.newPage();
-      await page.setViewport({width: 1920,height: 1080,});
+      await page.setViewport({width: 1920,height: 1080});
       await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36');
       await page.goto(targetUrl);
       
@@ -97,13 +97,13 @@ const crawler = async () => {
         }
           return tmpArr;
       });
-      console.log("Single Prd: ", productArr);
+      // console.log("END~~~~~~~", productArr);
       
       await page.close();
       result.push({targetUrl, productArr});
     }
     // throw new Error("test");
-    console.dir("final: ", result);
+    console.dir(result);
     
     if (result.length !== 0) {
       const dirNm = 'cvs/result_'+getDateStr()+'.csv';
@@ -119,6 +119,6 @@ const crawler = async () => {
   }
 }
 
-// schedule.scheduleJob('0 * * * *', () => {
+schedule.scheduleJob('0 * * * *', () => {
   crawler();  
-// });
+});
